@@ -22,7 +22,7 @@ func setNameURLLang(Name string, URL string) Lang {
 	return temp
 }
 
-func crawl(pfunc func(Lang), lang Lang, wg *sync.WaitGroup) {
+func crawl(pfunc func(Lang), lang Lang, wg *sync.WaitGroup, dataChannel *chan int64, timeChannel *chan time.Duration) {
 	defer wg.Done()
 	initial := time.Now()
 	resp, err := http.Get(lang.URL)
@@ -34,6 +34,8 @@ func crawl(pfunc func(Lang), lang Lang, wg *sync.WaitGroup) {
 	lang.Bytes = uint(body)
 	final := time.Since(initial).String()
 	lang.Time = final
+	*dataChannel <- body
+	*timeChannel <- time.Since(initial)
 	pfunc(lang)
 }
 
@@ -60,11 +62,21 @@ func main() {
 		site3,
 	}
 	initial := time.Now()
+	dataChannel := make(chan int64, 3)
+	timeChannel := make(chan time.Duration, 3)
 	for _, lang := range langs {
 		wg.Add(1)
-		go crawl(pfunc, lang, &wg)
+		go crawl(pfunc, lang, &wg, &dataChannel, &timeChannel)
 	}
 	wg.Wait()
 	final := time.Since(initial)
 	fmt.Println("Total time: \n", final)
+	var totalBytes int64
+	var totalTime time.Duration
+	for i := 1; i <= 3; i++ {
+		totalBytes += <-dataChannel
+		totalTime += <-timeChannel
+	}
+	fmt.Printf("Cumulative Bytes: %d\n", totalBytes)
+	fmt.Printf("Cumulative Time: %s\n", totalTime.String())
 }
