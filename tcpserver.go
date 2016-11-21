@@ -25,21 +25,31 @@ func main() {
 	}
 }
 
-func readMessage(conn net.Conn) (int, error) {
+func readMessage(conn net.Conn) {
 	for {
-		//request, err := bufio.NewReader(conn).ReadString('\n')
-		b := make([]byte, 1024)
-		n, err := conn.Read(b)
-		request := string(b[0:n])
-		//[]byte array
-		/*if err != nil {
-			fmt.Println(err)
-		}*/
-		// fmt.Println("Message read successfully:-")
-		// fmt.Println(string(message))
-		go writeMessage(conn, string(request))
-		return n, err
+		_, err := read(conn)
+		if err != nil {
+			fmt.Println("error")
+		}
 	}
+}
+
+func read(conn net.Conn) (int, error) {
+	b := make([]byte, 1024)
+	n, err := conn.Read(b)
+	if err != nil {
+		fmt.Println("error")
+	}
+	request := string(b[0:n])
+	//[]byte array
+	/*if err != nil {
+		fmt.Println(err)
+	}*/
+	//fmt.Println("Message read successfully:-")
+	//fmt.Println(string(request))
+	n, err = writeMessage(conn, string(request))
+	return n, err
+
 }
 
 func writeMessage(conn net.Conn, request string) (int, error) {

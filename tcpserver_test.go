@@ -140,7 +140,7 @@ func TestWriteMessage(t *testing.T) {
 
 }
 
-func TestReadMessage(t *testing.T) {
+func TestRead(t *testing.T) {
 	var object MyConn
 
 	object.buffer = make([]byte, 1024)
@@ -162,7 +162,7 @@ func TestReadMessage(t *testing.T) {
 		t.Error("test failed! error in write op")
 	}*/
 
-	n, err := readMessage(&object)
+	n, err := read(&object)
 
 	if err != nil {
 		t.Error("test failed! error occured in read op")
