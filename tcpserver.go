@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 )
@@ -25,11 +26,11 @@ func main() {
 	}
 }
 
-func readMessage(conn net.Conn) {
+func readMessage(conn net.Conn) error {
 	for {
 		_, err := read(conn)
 		if err != nil {
-			fmt.Println("error")
+			return errors.New("error occured in read connection")
 		}
 	}
 }

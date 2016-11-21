@@ -83,6 +83,21 @@ func (c *MyConn) SetWriteDeadline(t time.Time) error {
 
 }*/
 
+func TestReadMessage(t *testing.T) {
+	var object MyConn
+
+	object.buffer = []byte("1234")
+
+	object.left = 0
+	object.right = 0
+
+	err := readMessage(&object)
+
+	if err == nil {
+		t.Error("error occured in read operation")
+	}
+}
+
 func TestHelperSuccess(t *testing.T) {
 	expected := "Chitty\n"
 
