@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net"
 )
@@ -11,32 +10,47 @@ import (
 //write
 
 func main() {
-	ln, _ := net.Listen("tcp", ":8087")
+	ln, err := net.Listen("tcp", ":8086")
+
+	if err != nil {
+		fmt.Println("%v: ", err)
+	}
 	defer ln.Close()
 	for {
-		conn, _ := ln.Accept()
+		conn, err := ln.Accept()
+		if err != nil {
+			fmt.Println("%v: ", err)
+		}
 		go readMessage(conn)
 	}
 }
 
-func readMessage(conn net.Conn) {
+func readMessage(conn net.Conn) (int, error) {
 	for {
-		message, _ := bufio.NewReader(conn).ReadString('\n')
+		//request, err := bufio.NewReader(conn).ReadString('\n')
+		b := make([]byte, 1024)
+		n, err := conn.Read(b)
+		request := string(b[0:n])
 		//[]byte array
-		fmt.Println("Message read successfully:-")
-		fmt.Println(string(message))
-		go writeMessage(conn, string(message))
+		/*if err != nil {
+			fmt.Println(err)
+		}*/
+		// fmt.Println("Message read successfully:-")
+		// fmt.Println(string(message))
+		go writeMessage(conn, string(request))
+		return n, err
 	}
 }
 
-func writeMessage(conn net.Conn, message string) {
-	retVal := helper(message)
-	conn.Write([]byte(retVal))
+func writeMessage(conn net.Conn, request string) (int, error) {
+	response := helper(request)
+	n, err := conn.Write([]byte(response))
+	return n, err
 }
 
-func helper(message string) string {
+func helper(request string) string {
 
-	switch message {
+	switch request {
 	case "Hello\n":
 		return "Hi\n"
 	case "Name\n":
