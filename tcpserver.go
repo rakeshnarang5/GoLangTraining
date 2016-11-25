@@ -6,10 +6,6 @@ import (
 	"net"
 )
 
-//accept-main
-//read
-//write
-
 func main() {
 	ln, err := net.Listen("tcp", ":8086")
 
@@ -42,15 +38,8 @@ func read(conn net.Conn) (int, error) {
 		fmt.Println("error")
 	}
 	request := string(b[0:n])
-	//[]byte array
-	/*if err != nil {
-		fmt.Println(err)
-	}*/
-	//fmt.Println("Message read successfully:-")
-	//fmt.Println(string(request))
 	n, err = writeMessage(conn, string(request))
 	return n, err
-
 }
 
 func writeMessage(conn net.Conn, request string) (int, error) {
@@ -60,7 +49,6 @@ func writeMessage(conn net.Conn, request string) (int, error) {
 }
 
 func helper(request string) string {
-
 	switch request {
 	case "Hello\n":
 		return "Hi\n"
@@ -71,14 +59,4 @@ func helper(request string) string {
 	default:
 		return "Could not identify this command.\n"
 	}
-
 }
-
-// func handleRequest(conn net.Conn) {
-// 	for {
-// 		message, _ := bufio.NewReader(conn).ReadString('\n')
-// 		fmt.Println(string(message))
-// 		conn.Write([]byte("Message received: " + message))
-// 	}
-
-// }
